@@ -33,10 +33,22 @@ from lava_common.exceptions import (
     LAVAError,
     JobError,
 )
+
+import os
+
+import sys
+import suds
+
+from suds.client import Client
+
+
+
+
 from lava_dispatcher.log import YAMLLogger
 from lava_dispatcher.utils.lxc import is_lxc_requested
 from lava_dispatcher.utils.strings import seconds_to_str
 
+wsdl_url = "http://128.224.179.178:9005/?wsdl"
 
 class InternalObject(object):  # pylint: disable=too-few-public-methods
     """
@@ -202,6 +214,12 @@ class Pipeline(object):  # pylint: disable=too-many-instance-attributes
         # Diagnosis is not allowed to alter the connection, do not use the return value.
         return None
 
+    def repexp2up(self,lava_error):
+        return
+        #client = Client(wsdl_url)
+        #client.set_options(location=wsdl_url)
+        #result = client.service.add_lava_raise_error2report(self.job.job_id, lava_error)
+
     def run_actions(self, connection, max_end_time):  # pylint: disable=too-many-branches,too-many-statements,too-many-locals
         for action in self.actions:
             failed = False
@@ -223,6 +241,10 @@ class Pipeline(object):  # pylint: disable=too-many-instance-attributes
                     new_connection = action.run(connection, action_max_end_time)
             except LAVAError as exc:
                 action.logger.exception(str(exc))
+                #str_errormsg =    "[%s]%s" % (exc.error_type,exc.error_help)
+                #self.repexp2up(str_errormsg)
+                self.repexp2up(str(exc))
+
                 # allows retries without setting errors, which make the job incomplete.
                 failed = True
                 action.results = {'fail': str(exc)}
@@ -230,6 +252,7 @@ class Pipeline(object):  # pylint: disable=too-many-instance-attributes
                 raise
             except Exception as exc:
                 action.logger.exception(traceback.format_exc())
+                #self.repexp2up(traceback.format_exc())
                 # allows retries without setting errors, which make the job incomplete.
                 failed = True
                 action.results = {'fail': str(exc)}

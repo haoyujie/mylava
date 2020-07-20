@@ -27,17 +27,26 @@ import time
 import pytz
 import traceback
 import os
+
+import sys
+import suds
+
+from suds.client import Client
+
+
 from lava_common.exceptions import (
     LAVABug,
     LAVAError,
     JobError,
 )
 from lava_common.utils import debian_package_version
+from lava_common.ccmloghandler import CcmLoggerHandler
 from lava_dispatcher.logical import PipelineContext
 from lava_dispatcher.diagnostics import DiagnoseNetwork
 from lava_dispatcher.protocols.multinode import MultinodeProtocol  # pylint: disable=unused-import
 from lava_common.constants import DISPATCHER_DOWNLOAD_DIR
 
+wsdl_url = "http://128.224.179.178:9005/?wsdl"
 
 class ZMQConfig(object):
     """
@@ -70,6 +79,7 @@ class Job(object):  # pylint: disable=too-many-instance-attributes
     def __init__(self, job_id, parameters, logger):  # pylint: disable=too-many-arguments
         self.job_id = job_id
         self.logger = logger
+        #self.logger.addHandler(CcmLoggerHandler(job_id))
         self.device = None
         self.parameters = parameters
         self.__context__ = PipelineContext()
@@ -224,6 +234,12 @@ class Job(object):  # pylint: disable=too-many-instance-attributes
             if not success:
                 self.cleanup(connection=None)
 
+    def repexp2up(self,lava_error):
+        return
+        #client = Client(wsdl_url)
+        #client.set_options(location=wsdl_url)
+        #result = client.service.add_lava_raise_error2report(self.job_id, lava_error)
+
     def _run(self):
         """
         Run the pipeline under the run() wrapper that will catch the exceptions
@@ -259,6 +275,17 @@ class Job(object):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self._run()
+        except LAVAError as excl:
+            str_errormsg =    "[%s]%s" % (excl.error_type,excl.error_help)
+            self.repexp2up(str_errormsg)
+            raise
+        except Exception as excl:
+            self.logger.error("Unable to setup the protocols")
+            self.logger.exception(traceback.format_exc())
+            str_errormsg =  traceback.format_exc()
+            self.repexp2up(str_errormsg)
+
+            raise LAVABug(excl)
         finally:
             # Cleanup now
             self.cleanup(self.connection)
@@ -294,3 +321,9 @@ class Job(object):  # pylint: disable=too-many-instance-attributes
 
         # Mark cleanup as done to avoid calling it many times
         self.cleaned = True
+        # add by ccm yujie.hao@windriver.com, have move to ccmjob.py
+        #client = Client(wsdl_url)
+        #client.set_options(location=wsdl_url)
+        #result = client.service.end_test_report(self.job_id)
+        #self.logger.info("Send ccm result trans server : %s", result)
+

@@ -36,6 +36,7 @@ from lava_dispatcher.actions.boot.ipxe import IPXE
 from lava_dispatcher.actions.boot.kexec import BootKExec
 from lava_dispatcher.actions.boot.lxc import BootLxc
 from lava_dispatcher.actions.boot.minimal import Minimal
+from lava_dispatcher.actions.boot.minimal_demo import Minimal_DEMO
 from lava_dispatcher.actions.boot.pyocd import PyOCD
 from lava_dispatcher.actions.boot.qemu import BootQEMU
 from lava_dispatcher.actions.boot.ssh import SshLogin, Schroot

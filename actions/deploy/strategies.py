@@ -40,3 +40,7 @@ from lava_dispatcher.actions.deploy.uboot_ums import UBootUMS
 from lava_dispatcher.actions.deploy.vemsd import VExpressMsd
 from lava_dispatcher.actions.deploy.recovery import RecoveryMode
 from lava_dispatcher.actions.deploy.vlm import VlmDeploy
+from lava_dispatcher.actions.deploy.vlm_demo import VlmDEMODeploy
+from lava_dispatcher.actions.deploy.virt import VirtDeploy
+from lava_dispatcher.actions.deploy.simics import SimicsDeploy
+from lava_dispatcher.actions.deploy.qemudev import QemudevDeploy

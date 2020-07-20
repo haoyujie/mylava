@@ -22,6 +22,7 @@ import yaml
 from yaml.composer import Composer
 from yaml.constructor import Constructor
 from lava_dispatcher.job import Job
+from lava_dispatcher.ccmjob import CCMJob
 from lava_dispatcher.action import (
     Pipeline,
     Timeout,
@@ -121,7 +122,7 @@ class JobParser(object):
         self.loader.compose_node = self.compose_node
         self.loader.construct_mapping = self.construct_mapping
         data = self.loader.get_single_data()
-        job = Job(job_id, data, logger)
+        job = CCMJob(job_id, data, logger)
         test_counts = {}
         job.device = device
         job.parameters['env_dut'] = env_dut

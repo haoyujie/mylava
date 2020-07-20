@@ -213,10 +213,15 @@ class VlmDeployMasterAction(VlmDeployAction):
             self.write_pxeconfig()
         if 'dtb' in self.parameters:
             dtb_tmp = self.parameters.get('dtb')
+            #dtb_tmp = re.findall('artifacts(.*)$', dtb_url)[0]
         if 'kernel' in self.parameters:
             kernel_tmp = self.parameters.get('kernel')
-            rootfs_url = self.parameters.get('rootfs').get('url')
-            rootfs_tmp = re.findall('^.*buildarea1/lava', kernel_tmp)[0]+re.findall('8080(.*)', rootfs_url)[0]
+            #kernel_tmp = re.findall('artifacts(.*)$', kernel_url)[0]
+
+            rootfs_tmp = self.parameters.get('rootfs').get('url')
+            #rootfs_tmp = re.findall('artifacts(.*)$', rootfs_url)[0]
+            self.logger.debug("kernel: " + kernel_tmp)
+            self.logger.debug("rootfs: " + rootfs_tmp)
         elif 'master' in self.parameters:
             kernel_tmp = self.parameters.get('master')
             if self.device_type == 'x86_vlm':
